@@ -1,0 +1,41 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox"
+  
+  config.vm.define :controlPlane do |controlPlane|
+    controlPlane.vm.box = "ubuntu/bionic64"
+    controlPlane.vm.hostname = "control-plane"
+
+    controlPlane.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 2
+    end
+
+    controlPlane.vm.provision :shell, path: "k8s_install.sh"
+  end
+
+  config.vm.define :worker1 do |worker1|
+    worker1.vm.box = "ubuntu/bionic64"
+    worker1.vm.hostname = "worker1"
+
+    worker1.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 1
+    end
+
+    worker1.vm.provision :shell, path: "k8s_install.sh"
+  end
+
+  config.vm.define :worker2 do |worker2|
+    worker2.vm.box = "ubuntu/bionic64"
+    worker2.vm.hostname = "worker2"
+
+    worker2.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 1
+    end
+
+    worker2.vm.provision :shell, path: "k8s_install.sh"
+  end
+
+end
