@@ -15,7 +15,7 @@ The we follow the kind documentation to add a LoadBalancer service
 In the end of the LoadBalancer tutorial we can execute two commands
 
 ```sh
-kubectl apply -f service.yaml
+kubectl apply -f pod.yaml
 # or
 kubectl apply -f deployment.yaml
 ```
