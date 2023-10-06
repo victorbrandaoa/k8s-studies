@@ -31,7 +31,12 @@ You need to connect via ssh to you control plane node and then run the `kubeadm 
 ```sh
 vagrant ssh controlPlane
 
-sudo kubeadm init
+ifconfig # you can use this to find the vm's ip, you can get the ip in the enp0s8
+
+kubeadm init --apiserver-advertise-address=<controlPlaneIP> --pod-network-cidr=<IPRange>
+
+# example if your controlPlane's IP is 192.168.56.3
+# --apiserver-advertise-address=192.168.56.3 --pod-network-cidr=192.168.0.0/16
 ```
 
 Run the following command to make kubectl work with your non-root user
@@ -42,14 +47,16 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+Now you need to install a Pod network add-on, the following command install `calico`
+
+```sh
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+```
+
 Remind to copy the join command that you receive from `kubeadm init` it would look like
 
 ```sh
 kubeadm join --token <token> <control-plane-host>:<control-plane-port> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-Now you need to install a Pod network add-on, the following command install `calico`
-
-```sh
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-```
+Now you can enter into your worker nodes and then run the command as sudo to join them to the cluster
