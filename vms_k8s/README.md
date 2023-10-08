@@ -53,10 +53,20 @@ Now you need to install a Pod network add-on, the following command install `cal
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ```
 
+Then you can use the following command to verify if all the pods are running
+
+```sh
+kubectl get pods --all-namespaces
+```
+
 Remind to copy the join command that you receive from `kubeadm init` it would look like
 
 ```sh
 kubeadm join --token <token> <control-plane-host>:<control-plane-port> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-Now you can enter into your worker nodes and then run the command as sudo to join them to the cluster
+Now you can enter into your worker nodes and then run the command as sudo to join them to the cluster and to verify if it worked you can run the following command
+
+```sh
+kubectl get nodes
+```

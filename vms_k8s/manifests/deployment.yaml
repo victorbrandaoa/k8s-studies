@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpu-bound-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cpu-bound
+  template:
+    metadata:
+      labels:
+        app: cpu-bound
+    spec:
+      containers:
+        - name: cpu-bound
+          image: victorbrandaoa/cpu-bound
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cpu-bound-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: cpu-bound
+  ports:
+    - port: 8080

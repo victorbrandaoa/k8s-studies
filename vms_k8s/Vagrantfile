@@ -11,6 +11,7 @@ Vagrant.configure("2") do |config|
     end
 
     controlPlane.vm.provision :shell, path: "k8s_install.sh"
+    controlPlane.vm.provision :file, source: "./manifests", destination: "./manifests"
   end
 
   workers_machines_names = ["worker1", "worker2"]
