@@ -41,7 +41,7 @@ kubectl get svc # list the services
 Here is how you can test the factorial application and it works for both commands: the deployment and the pod
 
 ```sh
-LB_IP=$(kubectl get svc/<service-name> -o=jsonpath='{.status.loadBalancer.ingress[0].ip}' # get the load balancer ip
+LB_IP=$(kubectl get svc/<service-name> -o=jsonpath='{.status.loadBalancer.ingress[0].ip}') # get the load balancer ip
 
 for _ in {1..10}; do curl ${LB_IP}:8080/factorial/5; done # send requests to the load balancer
 ```
