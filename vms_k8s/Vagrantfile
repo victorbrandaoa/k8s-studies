@@ -10,7 +10,10 @@ Vagrant.configure("2") do |config|
       vb.cpus = 2
     end
 
+    controlPlane.vm.provision :shell, path: "containerd_install.sh"
+    controlPlane.vm.provision :shell, path: "containerd_config.sh"
     controlPlane.vm.provision :shell, path: "k8s_install.sh"
+
     controlPlane.vm.provision :file, source: "./manifests", destination: "./manifests"
   end
 
@@ -27,8 +30,9 @@ Vagrant.configure("2") do |config|
         vb.cpus = 1
       end
   
+      config.vm.provision :shell, path: "containerd_install.sh"
+      config.vm.provision :shell, path: "containerd_config.sh"
       config.vm.provision :shell, path: "k8s_install.sh"
     end
   end
-
 end

@@ -6,7 +6,13 @@ The `Vagrantfile` defines the configuration for three virtual machines:
 - Worker 1 with 1 VCPU and 2GB
 - Worker 2 with 1 VCPU and 2GB
 
-Vagrant uses the `k8s_install.sh` script to install `kubeadm`, `kubectl` and `kubelet` in all the machines
+Vagrant uses the following scripts
+
+- `containerd_install.sh` script to install `containerd` as the container runtime for Kubernetes
+
+- `containerd_config.sh` script to configure the containerd
+
+- `k8s_install.sh` script to install the K8S (kubeadm, kubectl and kubelet)
 
 You can run the following command to setup all the vms
 
@@ -24,49 +30,14 @@ vagrant ssh worker1
 vagrant ssh worker2
 ```
 
-### Creating the cluster
-
-You need to connect via ssh to you control plane node and then run the `kubeadm init` command
+### Configuring the systemd cgroup driver
 
 ```sh
-vagrant ssh controlPlane
+containerd config default | sudo tee /etc/containerd/config.toml # add the default config for containerd
 
-ifconfig # you can use this to find the vm's ip, you can get the ip in the enp0s8
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml # search the SystemdCgroup in the config file and then set its value to true
 
-kubeadm init --apiserver-advertise-address=<controlPlaneIP> --pod-network-cidr=<IPRange>
+sudo sed -i 's/sandbox_image = "registry.k8s.io\/pause:3.6"/sandbox_image = "registry.k8s.io\/pause:3.9"/' /etc/containerd/config.toml # search the sandbox_image in the config file and then set its version from 3.6 to 3.9
 
-# example if your controlPlane's IP is 192.168.56.3
-# --apiserver-advertise-address=192.168.56.3 --pod-network-cidr=192.168.0.0/16
-```
-
-Run the following command to make kubectl work with your non-root user
-
-```sh
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-```
-
-Now you need to install a Pod network add-on, the following command install `calico`
-
-```sh
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-```
-
-Then you can use the following command to verify if all the pods are running
-
-```sh
-kubectl get pods --all-namespaces
-```
-
-Remind to copy the join command that you receive from `kubeadm init` it would look like
-
-```sh
-kubeadm join --token <token> <control-plane-host>:<control-plane-port> --discovery-token-ca-cert-hash sha256:<hash>
-```
-
-Now you can enter into your worker nodes and then run the command as sudo to join them to the cluster and to verify if it worked you can run the following command
-
-```sh
-kubectl get nodes
+sudo systemctl restart containerd
 ```

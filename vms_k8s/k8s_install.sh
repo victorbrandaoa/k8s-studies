@@ -1,11 +1,15 @@
 #!/bin/bash
 
-# Update and install required packages
 sudo apt-get update -y
-sudo apt-get install -y docker.io
 
-# Install kubeadm, kubelet, and kubectl
-sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-sudo bash -c 'echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list'
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
 sudo apt-get update -y
-sudo apt-get install -y kubeadm kubelet kubectl
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+echo "k8s (kubeadm, kubectl and kubelet) installed"
